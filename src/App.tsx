@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
-const EMAIL = 'kontak@sscs.id'
-const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('Kerja sama SSCS')}&body=${encodeURIComponent(
-  'Halo tim SSCS,\n\nKami tertarik untuk (riset bersama / uji coba / demo perangkat).\n\nNama:\nInstitusi:\n',
+const EMAIL = 'contact@sscs.id'
+const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('SSCS partnership')}&body=${encodeURIComponent(
+  'Hello SSCS team,\n\nWe are interested in (joint research / a pilot / a device demo).\n\nName:\nInstitution:\n',
 )}`
 
 const WA_NUMBER = '+82 10-2922-0791'
 const WA = `https://wa.me/821029220791?text=${encodeURIComponent(
-  'Halo tim SSCS, saya ingin mendiskusikan penerapan alat SSCS di fasilitas kesehatan kami.\n\nNama:\nFasilitas (rumah sakit / klinik / puskesmas / posyandu):\nWilayah:',
+  'Hello SSCS team, I would like to discuss deploying the SSCS device at our healthcare facility.\n\nName:\nFacility (hospital / clinic / primary care centre / community health post):\nRegion:',
 )}`
 
 /* The lens from the "C" of the SSCS logo: two ring segments and a pupil. */
@@ -39,36 +39,36 @@ function lerp(xs: number[], ys: number[], x: number) {
   return ys[ys.length - 1]
 }
 function classify(z: number) {
-  if (z < -3) return { key: 'severe', label: 'Sangat pendek' }
-  if (z < -2) return { key: 'stunted', label: 'Pendek' }
-  if (z > 3) return { key: 'tall', label: 'Tinggi' }
+  if (z < -3) return { key: 'severe', label: 'Severely stunted' }
+  if (z < -2) return { key: 'stunted', label: 'Stunted' }
+  if (z > 3) return { key: 'tall', label: 'Tall' }
   return { key: 'normal', label: 'Normal' }
 }
-const fmt = (n: number, d = 1) => n.toFixed(d).replace('.', ',')
+const fmt = (n: number, d = 1) => n.toFixed(d)
 
 /* ---------- content ---------- */
 const STAGES = [
   {
-    name: 'Rekam',
-    text: 'Foto atau video balita diambil dalam posisi berdiri atau berbaring Satu foto cukup; video dibaca bingkai demi bingkai.',
-    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'Seorang balita berdiri di atas timbangan, dikelilingi ibu dan kader posyandu' },
+    name: 'Capture',
+    text: 'A photo or video of the child is taken standing or lying down. One photo is enough; video is read frame by frame.',
+    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'A toddler standing on a scale, surrounded by mothers and community health volunteers' },
   },
   {
-    name: 'Deteksi',
-    text: 'RT-DETR, detektor berbasis transformer, melakukan deteksi pada tubuh anak',
+    name: 'Detect',
+    text: 'RT-DETR, a transformer-based detector, locates the child’s body in the frame.',
   },
   {
-    name: 'Agregasi',
-    text: 'Modul Hierarchical Attention Aggregation menggabungkan dan menimbang informasi dari hasil deteksi tubuh anak untuk menghasilkan estimasi potensi stunting secara lebih menyeluruh sebelum proses klasifikasi.',
+    name: 'Aggregate',
+    text: 'The Hierarchical Attention Aggregation module combines and weighs the information from the body detection to form a more complete estimate of stunting potential before classification.',
   },
   {
-    name: 'Klasifikasi',
-    text: 'Model memberi status per anak (Potential Stunting, Normal), disertai dengan nilai confidence dari status hasil klasifikasi pada anak',
+    name: 'Classify',
+    text: 'The model gives each child a status (Potential Stunting or Normal), together with a confidence score for that classification.',
   },
 
   {
-    name: 'Laporan',
-    text: 'Hasil disimpan per anak dan siap dibandingkan dengan pengukuran manual, lalu diteruskan ke bidan atau petugas gizi puskesmas.',
+    name: 'Report',
+    text: 'Results are saved per child, ready to compare with manual measurements and to pass on to a midwife or nutrition officer.',
   },
 ]
 
@@ -118,11 +118,11 @@ function Checker() {
   }, [sex, age, height])
 
   return (
-    <section className="check section" id="cek" aria-labelledby="cek-title">
+    <section className="check section" id="check" aria-labelledby="check-title">
       <div className="check-stage" data-cat={cat.key}>
         <div className="disc">
           <p className="disc-z nums" aria-live="polite">
-            <span className="sr-only">Skor z </span>
+            <span className="sr-only">z-score </span>
             {z < 0 ? '−' : '+'}
             {fmt(Math.abs(z))}
             <span className="disc-unit"> SD</span>
@@ -132,26 +132,26 @@ function Checker() {
       </div>
 
       <div className="check-controls">
-        <h2 id="cek-title" className="check-title">Cek tinggi menurut umur</h2>
+        <h2 id="check-title" className="check-title">Check height for age</h2>
         <fieldset className="check-sex">
-          <legend className="sr-only">Jenis kelamin</legend>
+          <legend className="sr-only">Sex</legend>
           {(['P', 'L'] as const).map((s) => (
             <label key={s} className="seg">
               <input type="radio" name="sex" value={s} checked={sex === s} onChange={() => setSex(s)} />
-              <span>{s === 'P' ? 'Perempuan' : 'Laki-laki'}</span>
+              <span>{s === 'P' ? 'Girl' : 'Boy'}</span>
             </label>
           ))}
         </fieldset>
         <label className="range">
           <span className="range-row">
-            <span>Usia</span>
-            <span className="nums">{age} bulan</span>
+            <span>Age</span>
+            <span className="nums">{age} months</span>
           </span>
           <input type="range" min={0} max={60} step={1} value={age} onChange={(e) => setAge(+e.target.value)} />
         </label>
         <label className="range">
           <span className="range-row">
-            <span>Tinggi badan</span>
+            <span>Height</span>
             <span className="nums">{fmt(height)} cm</span>
           </span>
           <input type="range" min={40} max={125} step={0.5} value={height} onChange={(e) => setHeight(+e.target.value)} />
@@ -159,9 +159,8 @@ function Checker() {
       </div>
 
       <p className="check-fact">
-        Nilai ini menunjukkan posisi tinggi badan anak dibandingkan standar pertumbuhan WHO 
-        berdasarkan usia dan jenis kelamin. 
-        Nilai ini digunakan untuk menentukan kategori tinggi badan, seperti sangat pendek, pendek, normal, atau tinggi.
+        This value shows where the child’s height sits against the WHO growth standard for their age and sex. It is
+        used to place the child in a height category: severely stunted, stunted, normal or tall.
       </p>
     </section>
   )
@@ -197,18 +196,18 @@ export default function App() {
   return (
     <>
       <header className="bar">
-        <a className="mark" href="#top" aria-label="SSCS, ke awal halaman">
+        <a className="mark" href="#top" aria-label="SSCS, back to top">
           <img src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} />
         </a>
-        <nav aria-label="Utama">
+        <nav aria-label="Main">
           <ul className="nav">
-            <li><a className="link" href="#cara">Cara kerja</a></li>
-            <li><a className="link" href="#cek">Cek tinggi</a></li>
-            <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
-            <li><a className="link" href="#kontak">Kontak</a></li>
+            <li><a className="link" href="#how">How it works</a></li>
+            <li><a className="link" href="#check">Height check</a></li>
+            <li><a className="link" href="#specs">Specifications</a></li>
+            <li><a className="link" href="#contact">Contact</a></li>
           </ul>
         </nav>
-        <a className="button button-small" href={MAIL}>Hubungi kami</a>
+        <a className="button button-small" href={MAIL}>Contact us</a>
       </header>
 
       <main id="top">
@@ -216,16 +215,16 @@ export default function App() {
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
             <h1 id="hero-title" className="hero-title">
-              <span data-rise style={i(0)}>Lihat stunting</span>{' '}
-              <span data-rise style={i(1)}>lebih awal</span>
+              <span data-rise style={i(0)}>See stunting</span>{' '}
+              <span data-rise style={i(1)}>sooner</span>
             </h1>
             <p className="hero-sub" data-rise style={i(2)}>
-              SSCS membaca foto dan video balita secara real-time dengan model HAG-RT-DETR, untuk skrining stunting di
-              posyandu, puskesmas, klinik, rumah sakit dan laboratorium riset.
+              SSCS reads photos and live video of young children with the HAG-RT-DETR model, screening for stunting at
+              community health posts, primary care centres, clinics, hospitals and research labs.
             </p>
             <div className="hero-actions" data-rise style={i(3)}>
-              <a className="button" href={MAIL}>Hubungi kami</a>
-              <a className="link link-plain" href="#cek">Coba cek tinggi</a>
+              <a className="button" href={MAIL}>Contact us</a>
+              <a className="link link-plain" href="#check">Try the height check</a>
             </div>
           </div>
           <div className="hero-lens">
@@ -233,7 +232,7 @@ export default function App() {
             <figure className="pupil shutter is-auto">
               <img
                 src="/assets/posyandu.jpg"
-                alt="Seorang kader posyandu memangku balita yang menatap kamera"
+                alt="A community health volunteer holding a toddler who looks into the camera"
                 width={1400}
                 height={933}
                 fetchPriority="high"
@@ -243,13 +242,13 @@ export default function App() {
         </section>
 
         {/* ---------- intro statement ---------- */}
-        <section className="intro section" aria-label="Pengantar">
+        <section className="intro section" aria-label="Introduction">
           <p className="statement" data-reveal>
-            Tiap bulan kader posyandu
+            Every month, health volunteers
             <span className="thumb"><img src="/assets/kader-posyandu.jpg" alt="" width={1400} height={933} loading="lazy" /></span>
-            mengukur balita. SSCS membantu mereka melihat lebih cepat
+            measure Indonesia’s toddlers. SSCS helps them see sooner
             <span className="thumb"><img src="/assets/kegiatan-posyandu-desa-kanoman.jpg" alt="" width={1400} height={931} loading="lazy" /></span>
-            anak yang perlu dirujuk
+            which children need referral
             <span className="thumb"><img src="/assets/posyandu-di-dusun-porendeang-desa-bababulo.jpg" alt="" width={1400} height={788} loading="lazy" /></span>.
           </p>
         </section>
@@ -257,30 +256,30 @@ export default function App() {
         {/* ---------- stats ---------- */}
         <section className="stats section" aria-labelledby="stats-title">
           <div className="tile tile-a" data-reveal style={i(0)}>
-            <p className="tile-figure nums">19,8%</p>
-            <p className="tile-cap">balita Indonesia mengalami stunting menurut Survei Status Gizi Indonesia (SSGI) 2024.</p>
+            <p className="tile-figure nums">19.8%</p>
+            <p className="tile-cap">of Indonesian children under five are stunted, according to the Indonesian Nutritional Status Survey (SSGI) 2024.</p>
           </div>
-          <h2 id="stats-title" className="stats-title" data-reveal style={i(1)}>Angka yang dikejar</h2>
+          <h2 id="stats-title" className="stats-title" data-reveal style={i(1)}>The numbers that matter</h2>
           <div className="tile tile-b" data-reveal style={i(2)}>
             <p className="tile-figure nums">−2 SD</p>
             <p className="tile-cap">
-              SD (standar deviasi) mengukur jarak tinggi anak dari median anak sehat seusianya. Di bawah −2 SD, anak
-              tergolong pendek.
+              SD (standard deviation) measures how far a child’s height is from the median of healthy children the
+              same age. Below −2 SD, a child is classed as stunted.
             </p>
           </div>
           <div className="tile tile-c" data-reveal style={i(3)}>
-            <p className="tile-figure nums">1.000</p>
-            <p className="tile-cap">hari pertama kehidupan, saat intervensi gizi paling menentukan.</p>
+            <p className="tile-figure nums">1,000</p>
+            <p className="tile-cap">days, the first of a child’s life, when nutrition makes the biggest difference.</p>
           </div>
         </section>
 
         {/* ---------- how it works ---------- */}
-        <section className="how section" id="cara" aria-labelledby="cara-title">
+        <section className="how section" id="how" aria-labelledby="how-title">
           <div className="how-intro">
-            <h2 id="cara-title" className="head" data-reveal style={i(0)}>Dari kamera ke keputusan</h2>
+            <h2 id="how-title" className="head" data-reveal style={i(0)}>From camera to decision</h2>
             <p data-reveal style={i(1)}>
-              SSCS memakai RT-DETR yang kami modifikasi menjadi HAG-RT-DETR: Hierarchical Attention Aggregation. Seluruh
-              proses berjalan di perangkat, jadi foto anak tidak perlu dikirim ke server untuk dianalisis.
+              SSCS uses RT-DETR, which we modified into HAG-RT-DETR: Hierarchical Attention Aggregation. The whole
+              process runs on the device, so a child’s photo never has to be sent to a server for analysis.
             </p>
           </div>
           <Stages />
@@ -290,14 +289,14 @@ export default function App() {
         <Checker />
 
         {/* ---------- device specification ---------- */}
-        <section className="proto" id="spesifikasi" aria-labelledby="proto-title">
+        <section className="proto" id="specs" aria-labelledby="proto-title">
           <div className="proto-panel">
             <div className="proto-left">
-              <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Spesifikasi alat</h2>
+              <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Device specifications</h2>
               <figure className="proto-pic" data-reveal style={i(2)}>
                 <img
                   src="/assets/alat-sscs.jpg"
-                  alt="Prototipe SSCS: kotak cetak 3D bertuliskan Smart Stunting Care berisi mini PC GEEKOM dan kabel"
+                  alt="SSCS prototype: a 3D-printed case labelled Smart Stunting Care, holding a GEEKOM mini PC and cables"
                   width={1280}
                   height={720}
                   loading="lazy"
@@ -306,33 +305,33 @@ export default function App() {
             </div>
             <div className="proto-right">
               <div className="proto-block" data-reveal style={i(1)}>
-                <h3>Spesifikasi hardware</h3>
+                <h3>Hardware</h3>
                 <dl className="spec">
-                  <div><dt>Prosesor</dt><dd>Mini PC Intel Core i9</dd></div>
-                  <div><dt>Memori</dt><dd>RAM 32 GB</dd></div>
-                  <div><dt>Kamera</dt><dd>Untuk foto dan video langsung</dd></div>
-                  <div><dt>Layar</dt><dd>Monitor layar sentuh</dd></div>
+                  <div><dt>Processor</dt><dd>Intel Core i9 mini PC</dd></div>
+                  <div><dt>Memory</dt><dd>32 GB RAM</dd></div>
+                  <div><dt>Camera</dt><dd>For photos and live video</dd></div>
+                  <div><dt>Display</dt><dd>Touchscreen monitor</dd></div>
                 </dl>
               </div>
               <div className="proto-block" data-reveal style={i(2)}>
                 <h3>Software</h3>
                 <p>
-                  Seluruh perangkat lunak dikembangkan sendiri oleh tim SSCS, dari aplikasi di layar sampai model AI yang
-                  menjalankan deteksi.
+                  All software is built in-house by the SSCS team, from the on-screen application to the AI model that
+                  runs the detection.
                 </p>
                 <dl className="spec">
-                  <div><dt>Sistem operasi</dt><dd>Linux</dd></div>
-                  <div><dt>Aplikasi</dt><dd>Dibuat sendiri oleh tim SSCS</dd></div>
-                  <div><dt>Model AI</dt><dd>HAG-RT-DETR, dilatih sendiri melalui riset</dd></div>
+                  <div><dt>Operating system</dt><dd>Linux</dd></div>
+                  <div><dt>Application</dt><dd>Built by the SSCS team</dd></div>
+                  <div><dt>AI model</dt><dd>HAG-RT-DETR, trained in-house through our research</dd></div>
                 </dl>
               </div>
-              <a className="button" href={MAIL} data-reveal style={i(3)}>Hubungi kami</a>
+              <a className="button" href={MAIL} data-reveal style={i(3)}>Contact us</a>
             </div>
           </div>
         </section>
 
         {/* ---------- call to action: the lens returns ---------- */}
-        <section className="cta" id="kontak" aria-labelledby="cta-title">
+        <section className="cta" id="contact" aria-labelledby="cta-title">
           <div className="cta-lens" aria-hidden="true">
             <Lens className="cta-lens-shape" />
             <figure className="cta-pupil">
@@ -346,15 +345,15 @@ export default function App() {
             </figure>
           </div>
           <div className="cta-copy">
-            <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>SSCS untuk fasilitas kesehatan</h2>
+            <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>Bring SSCS to your facility</h2>
             <p className="cta-sub" data-reveal style={i(1)}>
-              Hubungi tim SSCS untuk menerapkan alat ini di rumah sakit, klinik, puskesmas, maupun posyandu. Ceritakan
-              kebutuhan fasilitas Anda, kita susun rencana uji coba bersama.
+              Contact the SSCS team to deploy the device at your hospital, clinic, primary care centre or community
+              health post. Tell us what your facility needs and we will plan a pilot together.
             </p>
             <ul className="cta-topics" data-reveal style={i(2)}>
-              <li><Lens className="cta-bullet" />Demo perangkat dan model HAG-RT-DETR</li>
-              <li><Lens className="cta-bullet" />Uji coba di rumah sakit, klinik, puskesmas, atau posyandu</li>
-              <li><Lens className="cta-bullet" />Kolaborasi riset, data, dan publikasi</li>
+              <li><Lens className="cta-bullet" />A demo of the device and the HAG-RT-DETR model</li>
+              <li><Lens className="cta-bullet" />Pilots at hospitals, clinics, primary care centres or health posts</li>
+              <li><Lens className="cta-bullet" />Research, data and publication partnerships</li>
             </ul>
             <div className="cta-actions" data-reveal style={i(3)}>
               <a className="button cta-button" href={WA} target="_blank" rel="noopener noreferrer">
@@ -370,27 +369,27 @@ export default function App() {
         <img className="foot-mark" src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} loading="lazy" />
         <div className="foot-cols">
           <div>
-            <h2>Halaman</h2>
+            <h2>Pages</h2>
             <ul>
-              <li><a className="link" href="#cara">Cara kerja</a></li>
-              <li><a className="link" href="#cek">Cek tinggi</a></li>
-              <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
-              <li><a className="link" href="#kontak">Kontak</a></li>
+              <li><a className="link" href="#how">How it works</a></li>
+              <li><a className="link" href="#check">Height check</a></li>
+              <li><a className="link" href="#specs">Specifications</a></li>
+              <li><a className="link" href="#contact">Contact</a></li>
             </ul>
           </div>
           <div>
-            <h2>Kontak</h2>
+            <h2>Contact</h2>
             <ul>
               <li><a className="link" href={WA} target="_blank" rel="noopener noreferrer">WhatsApp {WA_NUMBER}</a></li>
               <li><a className="link" href={MAIL}>{EMAIL}</a></li>
-              <li>Riset dan kemitraan bisnis</li>
+              <li>Research and business partnerships</li>
             </ul>
           </div>
           
         </div>
         <div className="foot-last">
           <span>© 2026 SSCS · Smart Stunting Care System</span>
-          <a className="button button-small" href="#top">Ke atas</a>
+          <a className="button button-small" href="#top">Back to top</a>
         </div>
       </footer>
     </>
