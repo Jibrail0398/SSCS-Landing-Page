@@ -5,6 +5,11 @@ const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('Kerja sama SSCS')}&b
   'Halo tim SSCS,\n\nKami tertarik untuk (riset bersama / uji coba / demo perangkat).\n\nNama:\nInstitusi:\n',
 )}`
 
+const WA_NUMBER = '+82 10-2922-0791'
+const WA = `https://wa.me/821029220791?text=${encodeURIComponent(
+  'Halo tim SSCS, saya ingin mendiskusikan penerapan alat SSCS di tempat kami.\n\nNama:\nInstitusi:\nWilayah:',
+)}`
+
 /* The lens from the "C" of the SSCS logo: two ring segments and a pupil. */
 function Lens({ className }: { className?: string }) {
   return (
@@ -46,7 +51,7 @@ const STAGES = [
   {
     name: 'Rekam',
     text: 'Foto atau video balita diambil dalam posisi berdiri atau berbaring Satu foto cukup; video dibaca bingkai demi bingkai.',
-    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'Seorang balita berdiri di atas timbangan, dikelilingi ibu dan kader posyandu' },
+    
   },
   {
     name: 'Deteksi',
@@ -393,8 +398,41 @@ export default function App() {
           ))}
         </section>
 
-        {/* ---------- call to action ---------- */}
-        
+        {/* ---------- call to action: the lens returns ---------- */}
+        <section className="cta" aria-labelledby="cta-title">
+          <div className="cta-lens" aria-hidden="true">
+            <Lens className="cta-lens-shape" />
+            <figure className="cta-pupil">
+              <img
+                src="/assets/monitoring-baby-s-weight-17580931861.jpg"
+                alt=""
+                width={1400}
+                height={933}
+                loading="lazy"
+              />
+            </figure>
+          </div>
+          <div className="cta-copy">
+            <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>Bawa SSCS ke posyandu Anda</h2>
+            <p className="cta-sub" data-reveal style={i(1)}>
+              Hubungi tim SSCS untuk menerapkan alat ini di puskesmas, posyandu, atau program riset Anda. Ceritakan
+              wilayah dan kebutuhannya, kita susun rencana uji coba bersama.
+            </p>
+            <ul className="cta-topics" data-reveal style={i(2)}>
+              <li><Lens className="cta-bullet" />Demo perangkat dan model HAG-RT-DETR</li>
+              <li><Lens className="cta-bullet" />Uji coba di posyandu atau puskesmas mitra</li>
+              <li><Lens className="cta-bullet" />Kolaborasi riset, data, dan publikasi</li>
+            </ul>
+            <div className="cta-actions" data-reveal style={i(3)}>
+              <a className="button cta-button" href={WA} target="_blank" rel="noopener noreferrer">
+                Chat via WhatsApp
+              </a>
+              <a className="link link-plain cta-number nums" href={WA} target="_blank" rel="noopener noreferrer">
+                {WA_NUMBER}
+              </a>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="foot">
@@ -412,6 +450,7 @@ export default function App() {
           <div>
             <h2>Kontak</h2>
             <ul>
+              <li><a className="link" href={WA} target="_blank" rel="noopener noreferrer">WhatsApp {WA_NUMBER}</a></li>
               <li><a className="link" href={MAIL}>{EMAIL}</a></li>
               <li>Riset dan kemitraan bisnis</li>
             </ul>
