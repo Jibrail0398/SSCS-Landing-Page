@@ -236,7 +236,6 @@ export default function App() {
             <li><a className="link" href="#contact">Contact</a></li>
           </ul>
         </nav>
-        <a className="button button-small" href={MAIL}>Contact us</a>
       </header>
 
       <main id="top">
@@ -252,7 +251,7 @@ export default function App() {
               community health posts, primary care centres, clinics, hospitals and research labs.
             </p>
             <div className="hero-actions" data-rise style={i(3)}>
-              <a className="button" href={MAIL}>Contact us</a>
+              <a className="button" href="#contact">Contact us</a>
               <a className="link link-plain" href="#check">Try the height check</a>
             </div>
           </div>
@@ -351,7 +350,6 @@ export default function App() {
                   <div data-reveal style={i(6)}><dt>AI model</dt><dd>HAG-RT-DETR, trained in-house through our research</dd></div>
                 </dl>
               </div>
-              <a className="button" href={MAIL} data-reveal style={i(3)}>Contact us</a>
             </div>
           </div>
         </section>
