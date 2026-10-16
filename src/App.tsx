@@ -51,7 +51,7 @@ const STAGES = [
   {
     name: 'Capture',
     text: 'A photo or video of the child is taken standing or lying down. One photo is enough; video is read frame by frame.',
-    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'A toddler standing on a scale, surrounded by mothers and community health volunteers' },
+    img: { src: '/assets/pexels-3279207.jpg', alt: 'A health worker holds up a smiling baby while two phones take its photo' },
   },
   {
     name: 'Detect',
@@ -181,7 +181,7 @@ function Stages() {
             <p>{s.text}</p>
             {s.img && (
               <figure className="stage-pic">
-                <img src={s.img.src} alt={s.img.alt} width={1400} height={931} loading="lazy" decoding="async" />
+                <img src={s.img.src} alt={s.img.alt} width={1400} height={933} loading="lazy" decoding="async" />
               </figure>
             )}
           </div>
@@ -231,10 +231,10 @@ export default function App() {
             <Lens className="lens-shape" />
             <figure className="pupil shutter is-auto">
               <img
-                src="/assets/posyandu.jpg"
-                alt="A community health volunteer holding a toddler who looks into the camera"
+                src="/assets/pexels-28680700.jpg"
+                alt="A parent’s hands cradling a newborn baby’s feet"
                 width={1400}
-                height={933}
+                height={2097}
                 fetchPriority="high"
               />
             </figure>
@@ -245,11 +245,8 @@ export default function App() {
         <section className="intro section" aria-label="Introduction">
           <p className="statement" data-reveal>
             Every month, health volunteers
-            <span className="thumb"><img src="/assets/kader-posyandu.jpg" alt="" width={1400} height={933} loading="lazy" /></span>
             measure Indonesia’s toddlers. SSCS helps them see sooner
-            <span className="thumb"><img src="/assets/kegiatan-posyandu-desa-kanoman.jpg" alt="" width={1400} height={931} loading="lazy" /></span>
             which children need referral
-            <span className="thumb"><img src="/assets/posyandu-di-dusun-porendeang-desa-bababulo.jpg" alt="" width={1400} height={788} loading="lazy" /></span>.
           </p>
         </section>
 
@@ -336,7 +333,7 @@ export default function App() {
             <Lens className="cta-lens-shape" />
             <figure className="cta-pupil">
               <img
-                src="/assets/monitoring-baby-s-weight-17580931861.jpg"
+                src="/assets/pexels-19357678.jpg"
                 alt=""
                 width={1400}
                 height={933}
