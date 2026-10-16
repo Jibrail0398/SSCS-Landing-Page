@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
+        
           
 
       - name: Upload ke cPanel via FTP

@@ -7,7 +7,7 @@ const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('Kerja sama SSCS')}&b
 
 const WA_NUMBER = '+82 10-2922-0791'
 const WA = `https://wa.me/821029220791?text=${encodeURIComponent(
-  'Halo tim SSCS, saya ingin mendiskusikan penerapan alat SSCS di tempat kami.\n\nNama:\nInstitusi:\nWilayah:',
+  'Halo tim SSCS, saya ingin mendiskusikan penerapan alat SSCS di fasilitas kesehatan kami.\n\nNama:\nFasilitas (rumah sakit / klinik / puskesmas / posyandu):\nWilayah:',
 )}`
 
 /* The lens from the "C" of the SSCS logo: two ring segments and a pupil. */
@@ -159,7 +159,7 @@ function Checker() {
       </div>
 
       <p className="check-fact">
-        Nilai inin menunjukkan posisi tinggi badan anak dibandingkan standar pertumbuhan WHO 
+        Nilai ini menunjukkan posisi tinggi badan anak dibandingkan standar pertumbuhan WHO 
         berdasarkan usia dan jenis kelamin. 
         Nilai ini digunakan untuk menentukan kategori tinggi badan, seperti sangat pendek, pendek, normal, atau tinggi.
       </p>
@@ -221,7 +221,7 @@ export default function App() {
             </h1>
             <p className="hero-sub" data-rise style={i(2)}>
               SSCS membaca foto dan video balita secara real-time dengan model HAG-RT-DETR, untuk skrining stunting di
-              posyandu, puskesmas, dan laboratorium riset.
+              posyandu, puskesmas, klinik, rumah sakit dan laboratorium riset.
             </p>
             <div className="hero-actions" data-rise style={i(3)}>
               <a className="button" href={MAIL}>Hubungi kami</a>
@@ -346,14 +346,14 @@ export default function App() {
             </figure>
           </div>
           <div className="cta-copy">
-            <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>Bawa SSCS ke posyandu Anda</h2>
+            <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>SSCS untuk fasilitas kesehatan</h2>
             <p className="cta-sub" data-reveal style={i(1)}>
-              Hubungi tim SSCS untuk menerapkan alat ini di puskesmas, posyandu, atau program riset Anda. Ceritakan
-              wilayah dan kebutuhannya, kita susun rencana uji coba bersama.
+              Hubungi tim SSCS untuk menerapkan alat ini di rumah sakit, klinik, puskesmas, maupun posyandu. Ceritakan
+              kebutuhan fasilitas Anda, kita susun rencana uji coba bersama.
             </p>
             <ul className="cta-topics" data-reveal style={i(2)}>
               <li><Lens className="cta-bullet" />Demo perangkat dan model HAG-RT-DETR</li>
-              <li><Lens className="cta-bullet" />Uji coba di posyandu atau puskesmas mitra</li>
+              <li><Lens className="cta-bullet" />Uji coba di rumah sakit, klinik, puskesmas, atau posyandu</li>
               <li><Lens className="cta-bullet" />Kolaborasi riset, data, dan publikasi</li>
             </ul>
             <div className="cta-actions" data-reveal style={i(3)}>
