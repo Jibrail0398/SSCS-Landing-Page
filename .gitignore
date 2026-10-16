@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-prompt.md
+
 node_modules
 dist
 dist-ssr
@@ -28,3 +28,4 @@ dist-ssr
 
 .taste-skill
 .env
+revisionprompt.md

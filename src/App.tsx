@@ -159,9 +159,9 @@ function Checker() {
       </div>
 
       <p className="check-fact">
-        Nilai ini adalah nilai median WHO, yaitu tinggi badan tengah anak sehat dengan usia dan jenis kelamin yang
-        sama menurut Standar Pertumbuhan Anak WHO (2006): separuh anak sehat lebih tinggi darinya, separuh lebih
-        pendek. Bukan untuk diagnosis deteksi stunting.
+        Nilai inin menunjukkan posisi tinggi badan anak dibandingkan standar pertumbuhan WHO 
+        berdasarkan usia dan jenis kelamin. 
+        Nilai ini digunakan untuk menentukan kategori tinggi badan, seperti sangat pendek, pendek, normal, atau tinggi.
       </p>
     </section>
   )
