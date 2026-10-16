@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { Fragment, useEffect, useMemo, useState, type CSSProperties } from 'react'
 
 const EMAIL = 'contact@sscs.id'
 const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('SSCS partnership')}&body=${encodeURIComponent(
@@ -72,7 +72,31 @@ const STAGES = [
   },
 ]
 
-/* ---------- reveal once on entering the viewport ---------- */
+const STATEMENT = 'Every month, health volunteers measure Indonesia’s toddlers. SSCS helps them see sooner which children need referral'
+
+/* ---------- reveal on entering the viewport, replay on every pass ---------- */
+function useHeroScroll() {
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>('.hero')
+    if (!hero || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const p = Math.min(Math.max(scrollY / hero.offsetHeight, 0), 1)
+      hero.style.setProperty('--hero-p', p.toFixed(3))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+}
+
 function useReveal() {
   useEffect(() => {
     const targets = document.querySelectorAll<HTMLElement>('[data-reveal]')
@@ -82,13 +106,13 @@ function useReveal() {
     }
     const io = new IntersectionObserver(
       (entries) => {
+        // play on every entry, reset once fully out of view so it plays again
         for (const e of entries) {
-          if (!e.isIntersecting) continue
-          e.target.classList.add('is-in')
-          io.unobserve(e.target)
+          if (e.intersectionRatio >= 0.08) e.target.classList.add('is-in')
+          else if (!e.isIntersecting) e.target.classList.remove('is-in')
         }
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+      { threshold: [0, 0.08] },
     )
     targets.forEach((el) => io.observe(el))
     const t = window.setTimeout(() => {
@@ -119,7 +143,7 @@ function Checker() {
 
   return (
     <section className="check section" id="check" aria-labelledby="check-title">
-      <div className="check-stage" data-cat={cat.key}>
+      <div className="check-stage" data-cat={cat.key} data-reveal="zoom">
         <div className="disc">
           <p className="disc-z nums" aria-live="polite">
             <span className="sr-only">z-score </span>
@@ -132,8 +156,8 @@ function Checker() {
       </div>
 
       <div className="check-controls">
-        <h2 id="check-title" className="check-title">Check height for age</h2>
-        <fieldset className="check-sex">
+        <h2 id="check-title" className="check-title" data-reveal style={i(0)}>Check height for age</h2>
+        <fieldset className="check-sex" data-reveal style={i(1)}>
           <legend className="sr-only">Sex</legend>
           {(['P', 'L'] as const).map((s) => (
             <label key={s} className="seg">
@@ -142,14 +166,14 @@ function Checker() {
             </label>
           ))}
         </fieldset>
-        <label className="range">
+        <label className="range" data-reveal style={i(2)}>
           <span className="range-row">
             <span>Age</span>
             <span className="nums">{age} months</span>
           </span>
           <input type="range" min={0} max={60} step={1} value={age} onChange={(e) => setAge(+e.target.value)} />
         </label>
-        <label className="range">
+        <label className="range" data-reveal style={i(3)}>
           <span className="range-row">
             <span>Height</span>
             <span className="nums">{fmt(height)} cm</span>
@@ -158,7 +182,7 @@ function Checker() {
         </label>
       </div>
 
-      <p className="check-fact">
+      <p className="check-fact" data-reveal style={i(2)}>
         This value shows where the child’s height sits against the WHO growth standard for their age and sex. It is
         used to place the child in a height category: severely stunted, stunted, normal or tall.
       </p>
@@ -169,7 +193,7 @@ function Checker() {
 function Stages() {
   const [open, setOpen] = useState(0)
   return (
-    <div className="stages" data-reveal style={i(2)}>
+    <div className="stages" data-reveal="card" style={i(2)}>
       {STAGES.map((s, n) => (
         <div key={s.name} className={'stage' + (n === open ? ' is-open' : '')} data-tone={n}>
           <h3 className="stage-head">
@@ -193,6 +217,7 @@ function Stages() {
 
 export default function App() {
   useReveal()
+  useHeroScroll()
   return (
     <>
       <header className="bar">
@@ -243,30 +268,30 @@ export default function App() {
 
         {/* ---------- intro statement ---------- */}
         <section className="intro section" aria-label="Introduction">
-          <p className="statement" data-reveal>
-            Every month, health volunteers
-            measure Indonesia’s toddlers. SSCS helps them see sooner
-            which children need referral
+          <p className="statement" data-reveal="words">
+            {STATEMENT.split(' ').map((w, n) => (
+              <Fragment key={n}><span style={i(n)}>{w}</span>{' '}</Fragment>
+            ))}
           </p>
         </section>
 
         {/* ---------- stats ---------- */}
         <section className="stats section" aria-labelledby="stats-title">
-          <div className="tile tile-a" data-reveal style={i(0)}>
-            <p className="tile-figure nums">19.8%</p>
-            <p className="tile-cap">of Indonesian children under five are stunted, according to the Indonesian Nutritional Status Survey (SSGI) 2024.</p>
+          <div className="tile tile-a" data-reveal="card" style={i(0)}>
+            <p className="tile-figure nums" data-reveal style={i(3)}>19.8%</p>
+            <p className="tile-cap" data-reveal style={i(5)}>of Indonesian children under five are stunted, according to the Indonesian Nutritional Status Survey (SSGI) 2024.</p>
           </div>
           <h2 id="stats-title" className="stats-title" data-reveal style={i(1)}>The numbers that matter</h2>
-          <div className="tile tile-b" data-reveal style={i(2)}>
-            <p className="tile-figure nums">−2 SD</p>
-            <p className="tile-cap">
+          <div className="tile tile-b" data-reveal="card" style={i(2)}>
+            <p className="tile-figure nums" data-reveal style={i(5)}>−2 SD</p>
+            <p className="tile-cap" data-reveal style={i(7)}>
               SD (standard deviation) measures how far a child’s height is from the median of healthy children the
               same age. Below −2 SD, a child is classed as stunted.
             </p>
           </div>
-          <div className="tile tile-c" data-reveal style={i(3)}>
-            <p className="tile-figure nums">1,000</p>
-            <p className="tile-cap">days, the first of a child’s life, when nutrition makes the biggest difference.</p>
+          <div className="tile tile-c" data-reveal="card" style={i(4)}>
+            <p className="tile-figure nums" data-reveal style={i(7)}>1,000</p>
+            <p className="tile-cap" data-reveal style={i(9)}>days, the first of a child’s life, when nutrition makes the biggest difference.</p>
           </div>
         </section>
 
@@ -287,10 +312,10 @@ export default function App() {
 
         {/* ---------- device specification ---------- */}
         <section className="proto" id="specs" aria-labelledby="proto-title">
-          <div className="proto-panel">
+          <div className="proto-panel" data-reveal="card">
             <div className="proto-left">
               <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Device specifications</h2>
-              <figure className="proto-pic" data-reveal style={i(2)}>
+              <figure className="proto-pic" data-reveal="zoom" style={i(2)}>
                 <img
                   src="/assets/alat-sscs.jpg"
                   alt="SSCS prototype: a 3D-printed case labelled Smart Stunting Care, holding a GEEKOM mini PC and cables"
@@ -304,22 +329,22 @@ export default function App() {
               <div className="proto-block" data-reveal style={i(1)}>
                 <h3>Hardware</h3>
                 <dl className="spec">
-                  <div><dt>Processor</dt><dd>Intel Core i9 mini PC</dd></div>
-                  <div><dt>Memory</dt><dd>32 GB RAM</dd></div>
-                  <div><dt>Camera</dt><dd>For photos and live video</dd></div>
-                  <div><dt>Display</dt><dd>Touchscreen monitor</dd></div>
+                  <div data-reveal style={i(2)}><dt>Processor</dt><dd>Intel Core i9 mini PC</dd></div>
+                  <div data-reveal style={i(3)}><dt>Memory</dt><dd>32 GB RAM</dd></div>
+                  <div data-reveal style={i(4)}><dt>Camera</dt><dd>For photos and live video</dd></div>
+                  <div data-reveal style={i(5)}><dt>Display</dt><dd>Touchscreen monitor</dd></div>
                 </dl>
               </div>
               <div className="proto-block" data-reveal style={i(2)}>
                 <h3>Software</h3>
-                <p>
+                <p data-reveal style={i(3)}>
                   All software is built in-house by the SSCS team, from the on-screen application to the AI model that
                   runs the detection.
                 </p>
                 <dl className="spec">
-                  <div><dt>Operating system</dt><dd>Linux</dd></div>
-                  <div><dt>Application</dt><dd>Built by the SSCS team</dd></div>
-                  <div><dt>AI model</dt><dd>HAG-RT-DETR, trained in-house through our research</dd></div>
+                  <div data-reveal style={i(4)}><dt>Operating system</dt><dd>Linux</dd></div>
+                  <div data-reveal style={i(5)}><dt>Application</dt><dd>Built by the SSCS team</dd></div>
+                  <div data-reveal style={i(6)}><dt>AI model</dt><dd>HAG-RT-DETR, trained in-house through our research</dd></div>
                 </dl>
               </div>
               <a className="button" href={MAIL} data-reveal style={i(3)}>Contact us</a>
@@ -330,16 +355,18 @@ export default function App() {
         {/* ---------- call to action: the lens returns ---------- */}
         <section className="cta" id="contact" aria-labelledby="cta-title">
           <div className="cta-lens" aria-hidden="true">
-            <Lens className="cta-lens-shape" />
-            <figure className="cta-pupil">
-              <img
-                src="/assets/pexels-19357678.jpg"
-                alt=""
-                width={1400}
-                height={933}
-                loading="lazy"
-              />
-            </figure>
+            <div className="cta-lens-in" data-reveal="spin">
+              <Lens className="cta-lens-shape" />
+              <figure className="cta-pupil">
+                <img
+                  src="/assets/pexels-19357678.jpg"
+                  alt=""
+                  width={1400}
+                  height={933}
+                  loading="lazy"
+                />
+              </figure>
+            </div>
           </div>
           <div className="cta-copy">
             <h2 id="cta-title" className="head cta-title" data-reveal style={i(0)}>Bring SSCS to your facility</h2>
@@ -347,12 +374,12 @@ export default function App() {
               Contact the SSCS team to deploy the device at your hospital, clinic, primary care centre or community
               health post. Tell us what your facility needs and we will plan a pilot together.
             </p>
-            <ul className="cta-topics" data-reveal style={i(2)}>
-              <li><Lens className="cta-bullet" />A demo of the device and the HAG-RT-DETR model</li>
-              <li><Lens className="cta-bullet" />Pilots at hospitals, clinics, primary care centres or health posts</li>
-              <li><Lens className="cta-bullet" />Research, data and publication partnerships</li>
+            <ul className="cta-topics">
+              <li data-reveal style={i(2)}><Lens className="cta-bullet" />A demo of the device and the HAG-RT-DETR model</li>
+              <li data-reveal style={i(3)}><Lens className="cta-bullet" />Pilots at hospitals, clinics, primary care centres or health posts</li>
+              <li data-reveal style={i(4)}><Lens className="cta-bullet" />Research, data and publication partnerships</li>
             </ul>
-            <div className="cta-actions" data-reveal style={i(3)}>
+            <div className="cta-actions" data-reveal style={i(5)}>
               <a className="button cta-button" href={WA} target="_blank" rel="noopener noreferrer">
                 Chat via WhatsApp
               </a>
@@ -363,9 +390,9 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        <img className="foot-mark" src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} loading="lazy" />
+        <img className="foot-mark" data-reveal style={i(0)} src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} loading="lazy" />
         <div className="foot-cols">
-          <div>
+          <div data-reveal style={i(1)}>
             <h2>Pages</h2>
             <ul>
               <li><a className="link" href="#how">How it works</a></li>
@@ -374,7 +401,7 @@ export default function App() {
               <li><a className="link" href="#contact">Contact</a></li>
             </ul>
           </div>
-          <div>
+          <div data-reveal style={i(2)}>
             <h2>Contact</h2>
             <ul>
               <li><a className="link" href={WA} target="_blank" rel="noopener noreferrer">WhatsApp {WA_NUMBER}</a></li>
@@ -384,7 +411,7 @@ export default function App() {
           </div>
           
         </div>
-        <div className="foot-last">
+        <div className="foot-last" data-reveal style={i(3)}>
           <span>© 2026 SSCS · Smart Stunting Care System</span>
           <a className="button button-small" href="#top">Back to top</a>
         </div>

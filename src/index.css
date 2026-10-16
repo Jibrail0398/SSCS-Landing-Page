@@ -248,6 +248,7 @@ p { max-width: 62ch; text-wrap: pretty; }
   position: absolute; width: 104vh; height: 104vh; left: calc(22% - 52vh); top: calc(58% - 52vh);
   color: var(--deep);
 }
+.cta-lens-in { position: absolute; inset: 0; }
 .cta-lens-shape { width: 100%; height: 100%; }
 .cta-pupil {
   position: absolute; width: 33.55%; aspect-ratio: 1; left: 33.22%; top: 33.22%; border-radius: 50%; overflow: hidden;
@@ -289,9 +290,22 @@ p { max-width: 62ch; text-wrap: pretty; }
   .js [data-rise] { opacity: 0; transform: translateY(22px); animation: rise var(--t-reveal) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 90ms + 150ms); }
   .js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 75ms); }
   .js [data-reveal].is-in { opacity: 1; transform: none; }
+  .js [data-reveal="zoom"] { transform: scale(0.82); transition-duration: 800ms, 1200ms; }
+  .js [data-reveal="card"] { transform: translateY(56px) scale(0.97); transition-duration: 800ms, 1100ms; }
+  .js [data-reveal="spin"] { transform: rotate(-40deg) scale(0.9); transition-duration: 900ms, 1500ms; }
+  .js [data-reveal="words"] { opacity: 1; transform: none; }
+  .js [data-reveal="words"] span { display: inline-block; opacity: 0; transform: translateY(0.5em); transition: opacity 600ms var(--ease-out), transform 800ms var(--ease-out); transition-delay: calc(var(--i, 0) * 45ms); }
+  .js [data-reveal="words"].is-in span { opacity: 1; transform: none; }
+  .js .stages.is-in .stage.is-open .stage-body > * { animation: rise 700ms var(--ease-out) both; }
+  .js .stages.is-in .stage.is-open .stage-body > :nth-child(1) { transform: translateY(16px); opacity: 0; animation-delay: 120ms; }
+  .js .stages.is-in .stage.is-open .stage-body > :nth-child(2) { transform: scale(0.9); opacity: 0; animation-delay: 220ms; }
+  .hero-lens { transform: translate3d(0, calc(var(--hero-p, 0) * 14vh), 0); }
+  .js .lens-shape { transform: rotate(calc(var(--hero-p, 0) * -50deg)); }
+  .hero-copy { transform: translate3d(0, calc(var(--hero-p, 0) * -8vh), 0); opacity: calc(1 - var(--hero-p, 0) * 0.7); }
+  .pupil img { scale: calc(1 + var(--hero-p, 0) * 0.15); }
   .js .shutter.is-auto { animation: shutter 1100ms var(--ease-in-out) 200ms both; }
   .js .shutter.is-auto img { animation: settle 1500ms var(--ease-soft) 200ms both, drift 22s ease-in-out 1700ms infinite alternate; }
-  .js .lens-shape { animation: turn 1400ms var(--ease-out) both; }
+  .js .lens-shape { animation: turn 1400ms var(--ease-out) backwards; }
   .js .proto-pic.is-in img { animation: drift 26s ease-in-out infinite alternate; }
 }
 @keyframes rise { to { opacity: 1; transform: none; } }
