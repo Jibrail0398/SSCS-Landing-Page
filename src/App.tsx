@@ -51,24 +51,28 @@ const STAGES = [
   {
     name: 'Capture',
     text: 'A photo or video of the child is taken standing or lying down. One photo is enough; video is read frame by frame.',
-    img: { src: '/assets/pexels-3279207.jpg', alt: 'A health worker holds up a smiling baby while two phones take its photo' },
+    img: { src: '/assets/pexels-3279207.jpg', alt: 'A health worker holds up a smiling baby while two phones take its photo', w: 1400, h: 933 },
   },
   {
     name: 'Detect',
     text: 'RT-DETR, a transformer-based detector, locates the child’s body in the frame.',
+    img: { src: '/assets/pexels-santhosh-kanthala-372615-39501490.jpg', alt: 'A digital eye made of glowing network lines', w: 1400, h: 933 },
   },
   {
     name: 'Aggregate',
     text: 'The Hierarchical Attention Aggregation module combines and weighs the information from the body detection to form a more complete estimate of stunting potential before classification.',
+    img: { src: '/assets/pexels-8386437.jpg', alt: 'A robotic hand touching a glowing blue network of connected points', w: 1400, h: 2100 },
   },
   {
     name: 'Classify',
     text: 'The model gives each child a status (Potential Stunting or Normal), together with a confidence score for that classification.',
+    img: { src: '/assets/pexels-15277956.jpg', alt: 'Medical scans shown on several computer screens', w: 1400, h: 933 },
   },
 
   {
     name: 'Report',
     text: 'Results are saved per child, ready to compare with manual measurements and to pass on to a midwife or nutrition officer.',
+    img: { src: '/assets/pexels-5407222.jpg', alt: 'A doctor writing notes at her desk beside a tablet', w: 1400, h: 2100 },
   },
 ]
 
@@ -205,7 +209,7 @@ function Stages() {
             <p>{s.text}</p>
             {s.img && (
               <figure className="stage-pic">
-                <img src={s.img.src} alt={s.img.alt} width={1400} height={933} loading="lazy" decoding="async" />
+                <img src={s.img.src} alt={s.img.alt} width={s.img.w} height={s.img.h} loading="lazy" decoding="async" />
               </figure>
             )}
           </div>
