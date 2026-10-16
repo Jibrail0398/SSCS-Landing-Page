@@ -72,31 +72,6 @@ const STAGES = [
   },
 ]
 
-const OFFERS = [
-  {
-    id: 'riset',
-    title: 'Untuk riset',
-    items: [
-      { name: 'Validasi lapangan', tag: 'Uji akurasi', text: 'Bandingkan keluaran SSCS dengan antropometri manual oleh tenaga kesehatan terlatih.', img: '/assets/timbang-balita-di-posyandu-porendeang.jpg' },
-      { name: 'Data beranotasi', tag: 'Dataset', text: 'Kumpulkan dan anotasi foto balita bersama kami, dengan izin orang tua dan persetujuan etik.', img: '/assets/posyandu.jpg' },
-      { name: 'Penelitian model', tag: 'Publikasi', text: 'Kaji arsitektur HAG-RT-DETR, ablasi modul atensi, dan perbandingan dengan detektor lain.', img: '/assets/kegiatan-posyandu.jpg' },
-      { name: 'Gizi masyarakat', tag: 'Kebijakan', text: 'Gunakan hasil skrining agregat untuk memetakan risiko stunting sampai tingkat desa.', img: '/assets/usaid-legacy-materal-child-health-8313229620.jpg' },
-    ],
-  },
-  {
-    id: 'bisnis',
-    title: 'Untuk bisnis',
-    items: [
-      { name: 'Pilot posyandu', tag: 'Uji coba', text: 'Jalankan SSCS di satu kecamatan bersama puskesmas dan kader setempat.', img: '/assets/posyandu-di-dusun-porendeang-desa-bababulo.jpg' },
-      { name: 'Unit perangkat', tag: 'Pengadaan', text: 'Perangkat SSCS untuk puskesmas, klinik anak, atau program CSR kesehatan.', img: '/assets/alat-sscs.jpg' },
-      { name: 'Lisensi model', tag: 'Lisensi', text: 'Pasang HAG-RT-DETR di aplikasi kesehatan atau sistem informasi posyandu Anda.', img: '/assets/kader-posyandu.jpg' },
-      { name: 'Ringkasan daerah', tag: 'Dasbor', text: 'Laporan hasil skrining per wilayah untuk dinas kesehatan kabupaten dan kota.', img: '/assets/monitoring-baby-s-weight-17580931861.jpg' },
-    ],
-  },
-]
-
-
-
 /* ---------- reveal once on entering the viewport ---------- */
 function useReveal() {
   useEffect(() => {
@@ -135,13 +110,12 @@ function Checker() {
   const [sex, setSex] = useState<'L' | 'P'>('P')
   const [age, setAge] = useState(24)
   const [height, setHeight] = useState(80)
-  const { median, sd, z, cat } = useMemo(() => {
+  const { z, cat } = useMemo(() => {
     const median = lerp(AGES, WHO[sex].median, age)
     const sd = lerp(AGES, WHO[sex].sd, age)
     const z = (height - median) / sd
-    return { median, sd, z, cat: classify(z) }
+    return { z, cat: classify(z) }
   }, [sex, age, height])
-  const cut = median - 2 * sd
 
   return (
     <section className="check section" id="cek" aria-labelledby="cek-title">
@@ -151,6 +125,7 @@ function Checker() {
             <span className="sr-only">Skor z </span>
             {z < 0 ? '−' : '+'}
             {fmt(Math.abs(z))}
+            <span className="disc-unit"> SD</span>
           </p>
           <p className="disc-label">{cat.label}</p>
         </div>
@@ -184,17 +159,9 @@ function Checker() {
       </div>
 
       <p className="check-fact">
-        Median WHO untuk {sex === 'P' ? 'anak perempuan' : 'anak laki-laki'} usia {age} bulan:{' '}
-        <strong className="nums">{fmt(median)} cm</strong>. Batas stunting (−2 SD):{' '}
-        <strong className="nums">{fmt(cut)} cm</strong>. Inilah ukuran yang dipelajari SSCS dari gambar.
-        <span className="check-sd">
-          SD (standar deviasi) adalah satuan jarak dari median. Pada usia ini 1 SD ≈{' '}
-          <span className="nums">{fmt(sd)} cm</span>, jadi −2 SD berarti sekitar{' '}
-          <span className="nums">{fmt(2 * sd)} cm</span> di bawah median.
-        </span>
-        <span className="check-caveat">
-          Perkiraan dari titik acuan Standar Pertumbuhan Anak WHO (2006).
-        </span>
+        Nilai ini adalah nilai median WHO, yaitu tinggi badan tengah anak sehat dengan usia dan jenis kelamin yang
+        sama menurut Standar Pertumbuhan Anak WHO (2006): separuh anak sehat lebih tinggi darinya, separuh lebih
+        pendek. Bukan untuk diagnosis deteksi stunting.
       </p>
     </section>
   )
@@ -238,7 +205,7 @@ export default function App() {
             <li><a className="link" href="#cara">Cara kerja</a></li>
             <li><a className="link" href="#cek">Cek tinggi</a></li>
             <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
-            <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
+            <li><a className="link" href="#kontak">Kontak</a></li>
           </ul>
         </nav>
         <a className="button button-small" href={MAIL}>Hubungi kami</a>
@@ -364,56 +331,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* ---------- offers ---------- */}
-        <section className="offers section" id="kerja-sama" aria-labelledby="offers-title">
-          <div className="offers-top">
-            <div className="offers-copy">
-              <h2 id="offers-title" className="head offers-title" data-reveal>Bekerja bersama SSCS</h2>
-              <p className="offers-sub" data-reveal style={i(1)}>
-                Mitra riset untuk menguji model di lapangan, mitra bisnis untuk membawa perangkat ke posyandu.
-              </p>
-            </div>
-            <figure className="offers-pic shutter-soft" data-reveal style={i(2)}>
-              <img
-                src="/assets/posyandu-malahing-1.jpg"
-                alt="Bangunan Posyandu Malahing beratap merah di atas air, dilihat dari balik jaring"
-                width={1400}
-                height={1867}
-                loading="lazy"
-              />
-            </figure>
-          </div>
-          <nav className="offers-jump" aria-label="Kategori kerja sama">
-            {OFFERS.map((o) => (
-              <a key={o.id} className="link link-plain" href={`#${o.id}`}>{o.title}</a>
-            ))}
-          </nav>
-          {OFFERS.map((o) => (
-            <div key={o.id} className="offer-group" id={o.id}>
-              <div className="offer-head" data-reveal>
-                <h3>{o.title}</h3>
-                <span className="nums">{o.items.length} bidang</span>
-              </div>
-              <ul className="offer-list">
-                {o.items.map((it, n) => (
-                  <li key={it.name} className="offer" data-reveal style={i(n)}>
-                    <img className="offer-pic" src={it.img} alt="" width={128} height={128} loading="lazy" />
-                    <div>
-                      <p className="offer-row">
-                        <strong>{it.name}</strong>
-                        <span className="offer-tag">{it.tag}</span>
-                      </p>
-                      <p className="offer-text">{it.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-
         {/* ---------- call to action: the lens returns ---------- */}
-        <section className="cta" aria-labelledby="cta-title">
+        <section className="cta" id="kontak" aria-labelledby="cta-title">
           <div className="cta-lens" aria-hidden="true">
             <Lens className="cta-lens-shape" />
             <figure className="cta-pupil">
@@ -441,9 +360,7 @@ export default function App() {
               <a className="button cta-button" href={WA} target="_blank" rel="noopener noreferrer">
                 Chat via WhatsApp
               </a>
-              <a className="link link-plain cta-number nums" href={WA} target="_blank" rel="noopener noreferrer">
-                {WA_NUMBER}
-              </a>
+              
             </div>
           </div>
         </section>
@@ -458,7 +375,7 @@ export default function App() {
               <li><a className="link" href="#cara">Cara kerja</a></li>
               <li><a className="link" href="#cek">Cek tinggi</a></li>
               <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
-              <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
+              <li><a className="link" href="#kontak">Kontak</a></li>
             </ul>
           </div>
           <div>
