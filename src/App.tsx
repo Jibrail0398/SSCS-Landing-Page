@@ -1,122 +1,428 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
-function App() {
-  const [count, setCount] = useState(0)
+const EMAIL = 'kontak@sscs.id'
+const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent('Kerja sama SSCS')}&body=${encodeURIComponent(
+  'Halo tim SSCS,\n\nKami tertarik untuk (riset bersama / uji coba / demo perangkat).\n\nNama:\nInstitusi:\n',
+)}`
 
+/* The lens from the "C" of the SSCS logo: two ring segments and a pupil. */
+function Lens({ className }: { className?: string }) {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <svg className={className} viewBox="-152 -152 304 304" aria-hidden="true" focusable="false">
+      <g fill="none" stroke="currentColor" strokeWidth="54">
+        <path d="M0 -125 A125 125 0 0 1 95.76 -80.35" />
+        <path d="M-125 0 A125 125 0 0 0 95.76 80.35" />
+      </g>
+      <circle r="51" fill="currentColor" />
+    </svg>
   )
 }
 
-export default App
+/* ---------- WHO height-for-age, approximate reference points (WHO Child Growth Standards, 2006) ---------- */
+const AGES = [0, 6, 12, 18, 24, 36, 48, 60]
+const WHO = {
+  L: { median: [49.9, 67.6, 75.7, 82.3, 87.8, 96.1, 103.3, 110.0], sd: [1.9, 2.2, 2.4, 2.7, 3.0, 3.7, 4.2, 4.7] },
+  P: { median: [49.1, 65.7, 74.0, 80.7, 86.4, 95.1, 102.7, 109.4], sd: [1.9, 2.3, 2.6, 2.9, 3.2, 3.8, 4.3, 4.7] },
+}
+function lerp(xs: number[], ys: number[], x: number) {
+  for (let i = 0; i < xs.length - 1; i++) {
+    if (x <= xs[i + 1]) {
+      const t = (x - xs[i]) / (xs[i + 1] - xs[i])
+      return ys[i] + t * (ys[i + 1] - ys[i])
+    }
+  }
+  return ys[ys.length - 1]
+}
+function classify(z: number) {
+  if (z < -3) return { key: 'severe', label: 'Sangat pendek', note: 'Di bawah −3 SD. Perlu rujukan ke puskesmas.' }
+  if (z < -2) return { key: 'stunted', label: 'Pendek', note: 'Di antara −3 dan −2 SD. Termasuk stunting.' }
+  if (z > 3) return { key: 'tall', label: 'Tinggi', note: 'Di atas +3 SD. Konsultasikan bila tidak sesuai riwayat keluarga.' }
+  return { key: 'normal', label: 'Normal', note: 'Di antara −2 dan +3 SD.' }
+}
+const fmt = (n: number, d = 1) => n.toFixed(d).replace('.', ',')
+
+/* ---------- content ---------- */
+const STAGES = [
+  {
+    name: 'Rekam',
+    text: 'Foto atau video balita diambil dalam posisi berdiri atau berbaring Satu foto cukup; video dibaca bingkai demi bingkai.',
+    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'Seorang balita berdiri di atas timbangan, dikelilingi ibu dan kader posyandu' },
+  },
+  {
+    name: 'Deteksi',
+    text: 'RT-DETR, detektor berbasis transformer, melakukan deteksi pada tubuh anak',
+  },
+  {
+    name: 'Agregasi',
+    text: 'Modul Hierarchical Attention Aggregation menggabungkan dan menimbang informasi dari hasil deteksi tubuh anak untuk menghasilkan estimasi potensi stunting secara lebih menyeluruh sebelum proses klasifikasi.',
+  },
+  {
+    name: 'Klasifikasi',
+    text: 'Model memberi status per anak (Potential Stunting, Normal), disertai dengan nilai confidence dari status hasil klasifikasi pada anak',
+  },
+
+  {
+    name: 'Laporan',
+    text: 'Hasil disimpan per anak dan siap dibandingkan dengan pengukuran manual, lalu diteruskan ke bidan atau petugas gizi puskesmas.',
+  },
+]
+
+const OFFERS = [
+  {
+    id: 'riset',
+    title: 'Untuk riset',
+    items: [
+      { name: 'Validasi lapangan', tag: 'Uji akurasi', text: 'Bandingkan keluaran SSCS dengan antropometri manual oleh tenaga kesehatan terlatih.', img: '/assets/timbang-balita-di-posyandu-porendeang.jpg' },
+      { name: 'Data beranotasi', tag: 'Dataset', text: 'Kumpulkan dan anotasi foto balita bersama kami, dengan izin orang tua dan persetujuan etik.', img: '/assets/posyandu.jpg' },
+      { name: 'Penelitian model', tag: 'Publikasi', text: 'Kaji arsitektur HAG-RT-DETR, ablasi modul atensi, dan perbandingan dengan detektor lain.', img: '/assets/kegiatan-posyandu.jpg' },
+      { name: 'Gizi masyarakat', tag: 'Kebijakan', text: 'Gunakan hasil skrining agregat untuk memetakan risiko stunting sampai tingkat desa.', img: '/assets/usaid-legacy-materal-child-health-8313229620.jpg' },
+    ],
+  },
+  {
+    id: 'bisnis',
+    title: 'Untuk bisnis',
+    items: [
+      { name: 'Pilot posyandu', tag: 'Uji coba', text: 'Jalankan SSCS di satu kecamatan bersama puskesmas dan kader setempat.', img: '/assets/posyandu-di-dusun-porendeang-desa-bababulo.jpg' },
+      { name: 'Unit perangkat', tag: 'Pengadaan', text: 'Perangkat SSCS untuk puskesmas, klinik anak, atau program CSR kesehatan.', img: '/assets/alat-sscs.jpg' },
+      { name: 'Lisensi model', tag: 'Lisensi', text: 'Pasang HAG-RT-DETR di aplikasi kesehatan atau sistem informasi posyandu Anda.', img: '/assets/kader-posyandu.jpg' },
+      { name: 'Ringkasan daerah', tag: 'Dasbor', text: 'Laporan hasil skrining per wilayah untuk dinas kesehatan kabupaten dan kota.', img: '/assets/monitoring-baby-s-weight-17580931861.jpg' },
+    ],
+  },
+]
+
+
+
+/* ---------- reveal once on entering the viewport ---------- */
+function useReveal() {
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach((el) => el.classList.add('is-in'))
+      return
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue
+          e.target.classList.add('is-in')
+          io.unobserve(e.target)
+        }
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    )
+    targets.forEach((el) => io.observe(el))
+    const t = window.setTimeout(() => {
+      targets.forEach((el) => {
+        const r = el.getBoundingClientRect()
+        if (r.top < innerHeight && r.bottom > 0) el.classList.add('is-in')
+      })
+    }, 2500)
+    return () => {
+      io.disconnect()
+      window.clearTimeout(t)
+    }
+  }, [])
+}
+
+const i = (n: number) => ({ '--i': n }) as CSSProperties
+
+function Checker() {
+  const [sex, setSex] = useState<'L' | 'P'>('P')
+  const [age, setAge] = useState(24)
+  const [height, setHeight] = useState(80)
+  const { median, sd, z, cat } = useMemo(() => {
+    const median = lerp(AGES, WHO[sex].median, age)
+    const sd = lerp(AGES, WHO[sex].sd, age)
+    const z = (height - median) / sd
+    return { median, sd, z, cat: classify(z) }
+  }, [sex, age, height])
+  const cut = median - 2 * sd
+
+  return (
+    <section className="check section" id="cek" aria-labelledby="cek-title">
+      <div className="check-stage" data-cat={cat.key}>
+        <div className="disc">
+          <p className="disc-z nums" aria-live="polite">
+            <span className="sr-only">Skor z </span>
+            {z < 0 ? '−' : '+'}
+            {fmt(Math.abs(z))}
+          </p>
+          <p className="disc-label">{cat.label}</p>
+          <p className="disc-note">{cat.note}</p>
+        </div>
+      </div>
+
+      <div className="check-controls">
+        <h2 id="cek-title" className="check-title">Cek tinggi menurut umur</h2>
+        <fieldset className="check-sex">
+          <legend className="sr-only">Jenis kelamin</legend>
+          {(['P', 'L'] as const).map((s) => (
+            <label key={s} className="seg">
+              <input type="radio" name="sex" value={s} checked={sex === s} onChange={() => setSex(s)} />
+              <span>{s === 'P' ? 'Perempuan' : 'Laki-laki'}</span>
+            </label>
+          ))}
+        </fieldset>
+        <label className="range">
+          <span className="range-row">
+            <span>Usia</span>
+            <span className="nums">{age} bulan</span>
+          </span>
+          <input type="range" min={0} max={60} step={1} value={age} onChange={(e) => setAge(+e.target.value)} />
+        </label>
+        <label className="range">
+          <span className="range-row">
+            <span>Tinggi badan</span>
+            <span className="nums">{fmt(height)} cm</span>
+          </span>
+          <input type="range" min={40} max={125} step={0.5} value={height} onChange={(e) => setHeight(+e.target.value)} />
+        </label>
+      </div>
+
+      <p className="check-fact">
+        Median WHO untuk {sex === 'P' ? 'anak perempuan' : 'anak laki-laki'} usia {age} bulan:{' '}
+        <strong className="nums">{fmt(median)} cm</strong>. Batas stunting (−2 SD):{' '}
+        <strong className="nums">{fmt(cut)} cm</strong>. Inilah ukuran yang dipelajari SSCS dari gambar.
+        <span className="check-caveat">
+          Perkiraan dari titik acuan Standar Pertumbuhan Anak WHO (2006). Untuk ilustrasi, bukan diagnosis.
+        </span>
+      </p>
+    </section>
+  )
+}
+
+function Stages() {
+  const [open, setOpen] = useState(0)
+  return (
+    <div className="stages" data-reveal style={i(2)}>
+      {STAGES.map((s, n) => (
+        <div key={s.name} className={'stage' + (n === open ? ' is-open' : '')} data-tone={n}>
+          <h3 className="stage-head">
+            <button type="button" aria-expanded={n === open} aria-controls={`stage-${n}`} onClick={() => setOpen(n)}>
+              {s.name}
+            </button>
+          </h3>
+          <div className="stage-body" id={`stage-${n}`} hidden={n !== open}>
+            <p>{s.text}</p>
+            {s.img && (
+              <figure className="stage-pic">
+                <img src={s.img.src} alt={s.img.alt} width={1400} height={931} loading="lazy" decoding="async" />
+              </figure>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function App() {
+  useReveal()
+  return (
+    <>
+      <header className="bar">
+        <a className="mark" href="#top" aria-label="SSCS, ke awal halaman">
+          <img src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} />
+        </a>
+        <nav aria-label="Utama">
+          <ul className="nav">
+            <li><a className="link" href="#cara">Cara kerja</a></li>
+            <li><a className="link" href="#cek">Cek tinggi</a></li>
+            <li><a className="link" href="#prototipe">Prototipe</a></li>
+            <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
+          </ul>
+        </nav>
+        <a className="button button-small" href={MAIL}>Hubungi kami</a>
+      </header>
+
+      <main id="top">
+        {/* ---------- hero ---------- */}
+        <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-copy">
+            <h1 id="hero-title" className="hero-title">
+              <span data-rise style={i(0)}>Lihat stunting</span>{' '}
+              <span data-rise style={i(1)}>lebih awal</span>
+            </h1>
+            <p className="hero-sub" data-rise style={i(2)}>
+              SSCS membaca foto dan video balita secara real-time dengan model HAG-RT-DETR, untuk skrining stunting di
+              posyandu, puskesmas, dan laboratorium riset.
+            </p>
+            <div className="hero-actions" data-rise style={i(3)}>
+              <a className="button" href={MAIL}>Hubungi kami</a>
+              <a className="link link-plain" href="#cek">Coba cek tinggi</a>
+            </div>
+          </div>
+          <div className="hero-lens">
+            <Lens className="lens-shape" />
+            <figure className="pupil shutter is-auto">
+              <img
+                src="/assets/posyandu.jpg"
+                alt="Seorang kader posyandu memangku balita yang menatap kamera"
+                width={1400}
+                height={933}
+                fetchPriority="high"
+              />
+            </figure>
+          </div>
+        </section>
+
+        {/* ---------- intro statement ---------- */}
+        <section className="intro section" aria-label="Pengantar">
+          <p className="statement" data-reveal>
+            Tiap bulan kader posyandu
+            <span className="thumb"><img src="/assets/kader-posyandu.jpg" alt="" width={1400} height={933} loading="lazy" /></span>
+            mengukur balita. SSCS membantu mereka melihat lebih cepat
+            <span className="thumb"><img src="/assets/kegiatan-posyandu-desa-kanoman.jpg" alt="" width={1400} height={931} loading="lazy" /></span>
+            anak yang perlu dirujuk
+            <span className="thumb"><img src="/assets/posyandu-di-dusun-porendeang-desa-bababulo.jpg" alt="" width={1400} height={788} loading="lazy" /></span>.
+          </p>
+        </section>
+
+        {/* ---------- stats ---------- */}
+        <section className="stats section" aria-labelledby="stats-title">
+          <div className="tile tile-a" data-reveal style={i(0)}>
+            <p className="tile-figure nums">19,8%</p>
+            <p className="tile-cap">balita Indonesia mengalami stunting menurut Survei Status Gizi Indonesia (SSGI) 2024.</p>
+          </div>
+          <h2 id="stats-title" className="stats-title" data-reveal style={i(1)}>Angka yang dikejar</h2>
+          <div className="tile tile-b" data-reveal style={i(2)}>
+            <p className="tile-figure nums">−2 SD</p>
+            <p className="tile-cap">Batas tinggi menurut umur pada standar WHO. Di bawahnya, anak tergolong pendek.</p>
+          </div>
+          <div className="tile tile-c" data-reveal style={i(3)}>
+            <p className="tile-figure nums">1.000</p>
+            <p className="tile-cap">hari pertama kehidupan, saat intervensi gizi paling menentukan.</p>
+          </div>
+        </section>
+
+        {/* ---------- how it works ---------- */}
+        <section className="how section" id="cara" aria-labelledby="cara-title">
+          <div className="how-intro">
+            <h2 id="cara-title" className="head" data-reveal style={i(0)}>Dari kamera ke keputusan</h2>
+            <p data-reveal style={i(1)}>
+              SSCS memakai RT-DETR yang kami modifikasi menjadi HAG-RT-DETR: Hierarchical Attention Aggregation. Seluruh
+              proses berjalan di perangkat, jadi foto anak tidak perlu dikirim ke server untuk dianalisis.
+            </p>
+          </div>
+          <Stages />
+        </section>
+
+        {/* ---------- live checker ---------- */}
+        <Checker />
+
+        {/* ---------- prototype ---------- */}
+        <section className="proto" id="prototipe" aria-labelledby="proto-title">
+          <div className="proto-panel">
+            <div className="proto-left">
+              <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Prototipe yang belum selesai</h2>
+              <figure className="proto-pic" data-reveal style={i(2)}>
+                <img
+                  src="/assets/alat-sscs.jpg"
+                  alt="Prototipe SSCS: kotak cetak 3D bertuliskan Smart Stunting Care berisi mini PC GEEKOM dan kabel"
+                  width={1280}
+                  height={720}
+                  loading="lazy"
+                />
+              </figure>
+            </div>
+            <div className="proto-right">
+              <div className="proto-block" data-reveal style={i(1)}>
+                <h3>Yang sudah berjalan</h3>
+                <p>
+                  Rumah perangkat dicetak 3D dan berisi mini PC GEEKOM yang menjalankan HAG-RT-DETR. Model sudah bisa
+                  membaca foto dan rekaman video.
+                </p>
+              </div>
+              <div className="proto-block" data-reveal style={i(2)}>
+                <h3>Yang sedang dikerjakan</h3>
+                <p>
+                  Modul kamera belum terpasang. Berikutnya: integrasi kamera, uji akurasi terhadap pengukuran manual, dan
+                  uji coba di posyandu mitra.
+                </p>
+              </div>
+              <a className="button" href={MAIL} data-reveal style={i(3)}>Hubungi kami</a>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- offers ---------- */}
+        <section className="offers section" id="kerja-sama" aria-labelledby="offers-title">
+          <div className="offers-top">
+            <div className="offers-copy">
+              <h2 id="offers-title" className="head offers-title" data-reveal>Bekerja bersama SSCS</h2>
+              <p className="offers-sub" data-reveal style={i(1)}>
+                Mitra riset untuk menguji model di lapangan, mitra bisnis untuk membawa perangkat ke posyandu.
+              </p>
+            </div>
+            <figure className="offers-pic shutter-soft" data-reveal style={i(2)}>
+              <img
+                src="/assets/posyandu-malahing-1.jpg"
+                alt="Bangunan Posyandu Malahing beratap merah di atas air, dilihat dari balik jaring"
+                width={1400}
+                height={1867}
+                loading="lazy"
+              />
+            </figure>
+          </div>
+          <nav className="offers-jump" aria-label="Kategori kerja sama">
+            {OFFERS.map((o) => (
+              <a key={o.id} className="link link-plain" href={`#${o.id}`}>{o.title}</a>
+            ))}
+          </nav>
+          {OFFERS.map((o) => (
+            <div key={o.id} className="offer-group" id={o.id}>
+              <div className="offer-head" data-reveal>
+                <h3>{o.title}</h3>
+                <span className="nums">{o.items.length} bidang</span>
+              </div>
+              <ul className="offer-list">
+                {o.items.map((it, n) => (
+                  <li key={it.name} className="offer" data-reveal style={i(n)}>
+                    <img className="offer-pic" src={it.img} alt="" width={128} height={128} loading="lazy" />
+                    <div>
+                      <p className="offer-row">
+                        <strong>{it.name}</strong>
+                        <span className="offer-tag">{it.tag}</span>
+                      </p>
+                      <p className="offer-text">{it.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+
+        {/* ---------- call to action ---------- */}
+        
+      </main>
+
+      <footer className="foot">
+        <img className="foot-mark" src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} loading="lazy" />
+        <div className="foot-cols">
+          <div>
+            <h2>Halaman</h2>
+            <ul>
+              <li><a className="link" href="#cara">Cara kerja</a></li>
+              <li><a className="link" href="#cek">Cek tinggi</a></li>
+              <li><a className="link" href="#prototipe">Prototipe</a></li>
+              <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>Kontak</h2>
+            <ul>
+              <li><a className="link" href={MAIL}>{EMAIL}</a></li>
+              <li>Riset dan kemitraan bisnis</li>
+            </ul>
+          </div>
+          
+        </div>
+        <div className="foot-last">
+          <span>© 2026 SSCS · Smart Stunting Care System</span>
+          <a className="button button-small" href="#top">Ke atas</a>
+        </div>
+      </footer>
+    </>
+  )
+}
