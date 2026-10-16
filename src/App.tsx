@@ -222,18 +222,42 @@ function Stages() {
 export default function App() {
   useReveal()
   useHeroScroll()
+  const [menu, setMenu] = useState(false)
+  useEffect(() => {
+    if (!menu) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(false)
+    const wide = matchMedia('(min-width: 961px)')
+    const onWide = () => wide.matches && setMenu(false)
+    addEventListener('keydown', onKey)
+    wide.addEventListener('change', onWide)
+    return () => {
+      removeEventListener('keydown', onKey)
+      wide.removeEventListener('change', onWide)
+    }
+  }, [menu])
+  const close = () => setMenu(false)
   return (
     <>
-      <header className="bar">
-        <a className="mark" href="#top" aria-label="SSCS, back to top">
+      <header className={'bar' + (menu ? ' is-open' : '')}>
+        <button
+          type="button"
+          className="burger"
+          aria-expanded={menu}
+          aria-controls="main-nav"
+          aria-label={menu ? 'Close menu' : 'Open menu'}
+          onClick={() => setMenu((m) => !m)}
+        >
+          <span aria-hidden="true" />
+        </button>
+        <a className="mark" href="#top" aria-label="SSCS, back to top" onClick={close}>
           <img src="/logo-sscs.png" alt="SSCS Smart Stunting Care System" width={1600} height={386} />
         </a>
-        <nav aria-label="Main">
+        <nav aria-label="Main" id="main-nav">
           <ul className="nav">
-            <li><a className="link" href="#how">How it works</a></li>
-            <li><a className="link" href="#check">Height check</a></li>
-            <li><a className="link" href="#specs">Specifications</a></li>
-            <li><a className="link" href="#contact">Contact</a></li>
+            <li><a className="link" href="#how" onClick={close}>How it works</a></li>
+            <li><a className="link" href="#check" onClick={close}>Height check</a></li>
+            <li><a className="link" href="#specs" onClick={close}>Specifications</a></li>
+            <li><a className="link" href="#contact" onClick={close}>Contact</a></li>
           </ul>
         </nav>
       </header>

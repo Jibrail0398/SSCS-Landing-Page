@@ -54,7 +54,7 @@ button, input { font: inherit; color: inherit; }
 button { background: none; border: 0; padding: 0; cursor: pointer; }
 a { color: inherit; }
 fieldset { border: 0; padding: 0; }
-:target { scroll-margin-top: 2rem; }
+:target { scroll-margin-top: 6rem; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 :focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 3px; }
 h1, h2, h3 { font-weight: 700; text-wrap: balance; letter-spacing: -0.02em; line-height: 1; }
@@ -86,8 +86,9 @@ p { max-width: 62ch; text-wrap: pretty; }
 /* ---------- bar ---------- */
 .bar {
   display: flex; align-items: center; gap: var(--gutter); padding: 1.25rem var(--margin);
-  position: relative; z-index: 2;
+  position: sticky; top: 0; z-index: 10; background: var(--bg);
 }
+.burger { display: none; }
 .mark { flex: none; }
 .mark img { width: auto; height: 2.5rem; background: none; }
 .bar nav { margin-left: auto; }
@@ -316,9 +317,25 @@ p { max-width: 62ch; text-wrap: pretty; }
 
 /* ---------- tablet and phone ---------- */
 @media (max-width: 960px) {
-  .nav { display: none; }
-  .bar { justify-content: space-between; }
+  .bar { flex-wrap: wrap; padding-block: 0.75rem; }
   .mark img { height: 2.1rem; }
+  .bar:not(.is-open) .mark, .bar:not(.is-open) nav { display: none; }
+  .bar nav { flex-basis: 100%; margin-left: 0; }
+  .nav { flex-direction: column; gap: 0; padding-block: 0.5rem 1rem; }
+  .nav a { display: flex; align-items: center; min-height: 3rem; font-size: var(--step-lead); font-weight: 500; }
+
+  .burger { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin-left: -0.6rem; flex: none; }
+  .burger span, .burger span::before, .burger span::after {
+    display: block; width: 1.5rem; height: 2px; background: currentColor; border-radius: 2px;
+    transition: transform var(--t-hover) var(--ease-out), background-color var(--t-hover) ease;
+  }
+  .burger span { position: relative; }
+  .burger span::before, .burger span::after { content: ''; position: absolute; left: 0; }
+  .burger span::before { transform: translateY(-7px); }
+  .burger span::after { transform: translateY(7px); }
+  .bar.is-open .burger span { background: transparent; }
+  .bar.is-open .burger span::before { transform: rotate(45deg); }
+  .bar.is-open .burger span::after { transform: rotate(-45deg); }
 
   .hero { display: block; min-height: 0; padding-block: 7svh 0; }
   .hero-copy { max-width: none; }
