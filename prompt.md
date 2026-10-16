@@ -1,11 +1,14 @@
-Buatkan Landing page dengan desain clean. Web landing page itu tujuannya untuk bisnis dan riset. Fokusnya di AI dan kesehatan.
+Pada keterangan ini:
+"
+Median WHO untuk anak perempuan usia 33 bulan: 92,9 cm. Batas stunting (−2 SD): 85,6 cm. Inilah ukuran yang dipelajari SSCS dari gambar.SD (standar deviasi) adalah satuan jarak dari median. Pada usia ini 1 SD ≈ 3,6 cm, jadi −2 SD berarti sekitar 7,3 cm di bawah median.
+"
 
-Nama produknya adalah SSCS (Smart Care Stunting System). SSCS ini adalah sebuah alat yang bisa mendeteksi stunting dari gambar ataupun secara realtime melalui foto dan video. Model yang digunakan adalah RT-DETR modifikasi dengan nama HAG (Hierarchical Attention Aggregation) RT-DETR. Produk ini berlogo:/home/jibrailadji/coding-projects/stunting-detection/SSCS-Landing-Page/public/logo-sscs.png. Gunakan warna dari logo itu sebagai warna utama pada landing page.
-Produk dari SSCS seperti ini:
-/home/jibrailadji/coding-projects/stunting-detection/SSCS-Landing-Page/public/Alat SSCS.jpg
-tapi porduk itu belum selesai. kameranya juga belum ada
+ubah menjadi:
+"
+Nilai ini adalah nilai media WHO. [Jelaskan apa itu nilai media WHO], Bukan untuk diagnosis deteksi stunting
+"
 
-
-
-Gunakan website berikut sebagai inspirasi design:
-https://www.alike.health/stories/
+Selanjutnya hapus seluruh bagian:
+"Bekerja bersama SSCS"
+"Untuk riset"
+"Untuk Bisnis"

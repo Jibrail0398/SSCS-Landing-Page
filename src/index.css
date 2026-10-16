@@ -189,7 +189,6 @@ p { max-width: 62ch; text-wrap: pretty; }
 .check-stage[data-cat='tall'] .disc { background: var(--tone-4); color: var(--accent-ink); }
 .disc-z { font-size: var(--step-display); font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
 .disc-label { margin-top: 0.5rem; font-size: var(--step-lead); font-weight: 700; }
-.disc-note { margin-top: 0.75rem; max-width: 24ch; }
 .check-controls {
   position: absolute; left: var(--margin); bottom: 8vh; width: min(30vw, 400px); display: grid; gap: 1.75rem;
 }
@@ -219,6 +218,7 @@ p { max-width: 62ch; text-wrap: pretty; }
   position: absolute; left: calc(58% + 34vh); top: calc(50% - 4rem); width: min(19vw, 280px);
 }
 .check-fact strong { font-weight: 700; }
+.check-sd { display: block; margin-top: 1rem; }
 .check-caveat { display: block; margin-top: 1rem; font-size: var(--step-small); color: var(--muted); }
 
 /* ---------- prototype ---------- */
@@ -235,6 +235,10 @@ p { max-width: 62ch; text-wrap: pretty; }
 .proto-right { position: absolute; left: 63%; top: 56px; width: min(26vw, 380px); display: grid; gap: 64px; justify-items: start; }
 .proto-block h3 { font-size: var(--step-lead); }
 .proto-block p { margin-top: 1rem; }
+.spec { margin: 1.25rem 0 0; display: grid; gap: 0.9rem; }
+.spec div { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; }
+.spec dt { color: var(--accent); font-weight: 500; }
+.spec dd { margin: 0; }
 
 /* ---------- offers ---------- */
 .offers { padding-top: var(--section); }

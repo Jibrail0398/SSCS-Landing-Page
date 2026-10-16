@@ -39,10 +39,10 @@ function lerp(xs: number[], ys: number[], x: number) {
   return ys[ys.length - 1]
 }
 function classify(z: number) {
-  if (z < -3) return { key: 'severe', label: 'Sangat pendek', note: 'Di bawah −3 SD. Perlu rujukan ke puskesmas.' }
-  if (z < -2) return { key: 'stunted', label: 'Pendek', note: 'Di antara −3 dan −2 SD. Termasuk stunting.' }
-  if (z > 3) return { key: 'tall', label: 'Tinggi', note: 'Di atas +3 SD. Konsultasikan bila tidak sesuai riwayat keluarga.' }
-  return { key: 'normal', label: 'Normal', note: 'Di antara −2 dan +3 SD.' }
+  if (z < -3) return { key: 'severe', label: 'Sangat pendek' }
+  if (z < -2) return { key: 'stunted', label: 'Pendek' }
+  if (z > 3) return { key: 'tall', label: 'Tinggi' }
+  return { key: 'normal', label: 'Normal' }
 }
 const fmt = (n: number, d = 1) => n.toFixed(d).replace('.', ',')
 
@@ -51,7 +51,7 @@ const STAGES = [
   {
     name: 'Rekam',
     text: 'Foto atau video balita diambil dalam posisi berdiri atau berbaring Satu foto cukup; video dibaca bingkai demi bingkai.',
-    
+    img: { src: '/assets/kegiatan-posyandu-desa-kanoman.jpg', alt: 'Seorang balita berdiri di atas timbangan, dikelilingi ibu dan kader posyandu' },
   },
   {
     name: 'Deteksi',
@@ -153,7 +153,6 @@ function Checker() {
             {fmt(Math.abs(z))}
           </p>
           <p className="disc-label">{cat.label}</p>
-          <p className="disc-note">{cat.note}</p>
         </div>
       </div>
 
@@ -188,8 +187,13 @@ function Checker() {
         Median WHO untuk {sex === 'P' ? 'anak perempuan' : 'anak laki-laki'} usia {age} bulan:{' '}
         <strong className="nums">{fmt(median)} cm</strong>. Batas stunting (−2 SD):{' '}
         <strong className="nums">{fmt(cut)} cm</strong>. Inilah ukuran yang dipelajari SSCS dari gambar.
+        <span className="check-sd">
+          SD (standar deviasi) adalah satuan jarak dari median. Pada usia ini 1 SD ≈{' '}
+          <span className="nums">{fmt(sd)} cm</span>, jadi −2 SD berarti sekitar{' '}
+          <span className="nums">{fmt(2 * sd)} cm</span> di bawah median.
+        </span>
         <span className="check-caveat">
-          Perkiraan dari titik acuan Standar Pertumbuhan Anak WHO (2006). Untuk ilustrasi, bukan diagnosis.
+          Perkiraan dari titik acuan Standar Pertumbuhan Anak WHO (2006).
         </span>
       </p>
     </section>
@@ -233,7 +237,7 @@ export default function App() {
           <ul className="nav">
             <li><a className="link" href="#cara">Cara kerja</a></li>
             <li><a className="link" href="#cek">Cek tinggi</a></li>
-            <li><a className="link" href="#prototipe">Prototipe</a></li>
+            <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
             <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
           </ul>
         </nav>
@@ -292,7 +296,10 @@ export default function App() {
           <h2 id="stats-title" className="stats-title" data-reveal style={i(1)}>Angka yang dikejar</h2>
           <div className="tile tile-b" data-reveal style={i(2)}>
             <p className="tile-figure nums">−2 SD</p>
-            <p className="tile-cap">Batas tinggi menurut umur pada standar WHO. Di bawahnya, anak tergolong pendek.</p>
+            <p className="tile-cap">
+              SD (standar deviasi) mengukur jarak tinggi anak dari median anak sehat seusianya. Di bawah −2 SD, anak
+              tergolong pendek.
+            </p>
           </div>
           <div className="tile tile-c" data-reveal style={i(3)}>
             <p className="tile-figure nums">1.000</p>
@@ -315,11 +322,11 @@ export default function App() {
         {/* ---------- live checker ---------- */}
         <Checker />
 
-        {/* ---------- prototype ---------- */}
-        <section className="proto" id="prototipe" aria-labelledby="proto-title">
+        {/* ---------- device specification ---------- */}
+        <section className="proto" id="spesifikasi" aria-labelledby="proto-title">
           <div className="proto-panel">
             <div className="proto-left">
-              <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Prototipe yang belum selesai</h2>
+              <h2 id="proto-title" className="proto-title" data-reveal style={i(0)}>Spesifikasi alat</h2>
               <figure className="proto-pic" data-reveal style={i(2)}>
                 <img
                   src="/assets/alat-sscs.jpg"
@@ -332,18 +339,25 @@ export default function App() {
             </div>
             <div className="proto-right">
               <div className="proto-block" data-reveal style={i(1)}>
-                <h3>Yang sudah berjalan</h3>
-                <p>
-                  Rumah perangkat dicetak 3D dan berisi mini PC GEEKOM yang menjalankan HAG-RT-DETR. Model sudah bisa
-                  membaca foto dan rekaman video.
-                </p>
+                <h3>Spesifikasi hardware</h3>
+                <dl className="spec">
+                  <div><dt>Prosesor</dt><dd>Mini PC Intel Core i9</dd></div>
+                  <div><dt>Memori</dt><dd>RAM 32 GB</dd></div>
+                  <div><dt>Kamera</dt><dd>Untuk foto dan video langsung</dd></div>
+                  <div><dt>Layar</dt><dd>Monitor layar sentuh</dd></div>
+                </dl>
               </div>
               <div className="proto-block" data-reveal style={i(2)}>
-                <h3>Yang sedang dikerjakan</h3>
+                <h3>Software</h3>
                 <p>
-                  Modul kamera belum terpasang. Berikutnya: integrasi kamera, uji akurasi terhadap pengukuran manual, dan
-                  uji coba di posyandu mitra.
+                  Seluruh perangkat lunak dikembangkan sendiri oleh tim SSCS, dari aplikasi di layar sampai model AI yang
+                  menjalankan deteksi.
                 </p>
+                <dl className="spec">
+                  <div><dt>Sistem operasi</dt><dd>Linux</dd></div>
+                  <div><dt>Aplikasi</dt><dd>Dibuat sendiri oleh tim SSCS</dd></div>
+                  <div><dt>Model AI</dt><dd>HAG-RT-DETR, dilatih sendiri melalui riset</dd></div>
+                </dl>
               </div>
               <a className="button" href={MAIL} data-reveal style={i(3)}>Hubungi kami</a>
             </div>
@@ -443,7 +457,7 @@ export default function App() {
             <ul>
               <li><a className="link" href="#cara">Cara kerja</a></li>
               <li><a className="link" href="#cek">Cek tinggi</a></li>
-              <li><a className="link" href="#prototipe">Prototipe</a></li>
+              <li><a className="link" href="#spesifikasi">Spesifikasi</a></li>
               <li><a className="link" href="#kerja-sama">Kerja sama</a></li>
             </ul>
           </div>
